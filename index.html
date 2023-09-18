@@ -3,15 +3,21 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="preload" href="fonts/inter-v7-latin_cyrillic-regular.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/inter-v7-latin_cyrillic-500.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/inter-v7-latin_cyrillic-600.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/inter-v7-latin_cyrillic-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/inter-v7-latin_cyrillic-regular.woff2" as="font"
+    type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/inter-v7-latin_cyrillic-500.woff2" as="font"
+    type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/inter-v7-latin_cyrillic-600.woff2" as="font"
+    type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/inter-v7-latin_cyrillic-700.woff2" as="font"
+    type="font/woff2" crossorigin>
 
   <link rel="stylesheet" href="css/index.css">
   <title>CMS</title>
+  <script defer src="script.js"></script>
 </head>
 
 <body>
@@ -31,7 +37,8 @@
         <div class="goods__panel panel">
           <button class="panel__filter">Фильтр</button>
           <form class="panel__search">
-            <input type="search" class="panel__input" placeholder="Поиск по наименованию и категории">
+            <input type="search" class="panel__input"
+              placeholder="Поиск по наименованию и категории">
           </form>
           <button class="panel__add-goods">Добавить товар</button>
         </div>
@@ -52,9 +59,11 @@
             <tbody class="table__body">
               <tr>
                 <td class="table__cell">1</td>
-                <td class="table__cell table__cell_left table__cell_name" data-id="24601654816512">
+                <td class="table__cell table__cell_left table__cell_name"
+                  data-id="24601654816512">
                   <span class="table__cell-id">id: 24601654816512</span>
-                  Навигационная система Soundmax</td>
+                  Навигационная система Soundmax
+                </td>
                 <td class="table__cell table__cell_left">Техника для дома</td>
                 <td class="table__cell">шт</td>
                 <td class="table__cell">5</td>
@@ -68,8 +77,10 @@
               </tr>
               <tr>
                 <td class="table__cell ">2</td>
-                <td class="table__cell table__cell_left table__cell_name" data-id="24601654816512">
-                  <span class="table__cell-id">id: 24601654816512</span>Телевизор DEXP</td>
+                <td class="table__cell table__cell_left table__cell_name"
+                  data-id="24601654816512">
+                  <span class="table__cell-id">id: 24601654816512</span>Телевизор DEXP
+                </td>
                 <td class="table__cell table__cell_left">Техника для дома</td>
                 <td class="table__cell">шт</td>
                 <td class="table__cell">15</td>
@@ -103,17 +114,21 @@
     <div class="overlay__modal modal">
       <button class="modal__close">
         <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="m2 2 20 20M2 22 22 2" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></svg>
+          <path d="m2 2 20 20M2 22 22 2" stroke="currentColor" stroke-width="3"
+            stroke-linecap="round" />
+        </svg>
       </button>
 
       <div class="modal_top">
         <h2 class="modal__title">Добавить товар</h2>
         <div class="modal__vendor-code vendor-code">
-          <p class="vendor-code__wrapper">id: <span class="vendor-code__id">24601654816512</span></p>
+          <p class="vendor-code__wrapper">id: <span
+              class="vendor-code__id">24601654816512</span></p>
         </div>
       </div>
 
-      <form action="https://jsonplaceholder.typicode.com/posts" class="modal__form" method="post">
+      <form action="https://jsonplaceholder.typicode.com/posts" class="modal__form"
+        method="post">
         <fieldset class="modal__fieldset">
 
           <label class="modal__label modal__label_name" for="name">
@@ -129,7 +144,8 @@
 
           <label class="modal__label modal__label_description" for="description">
             <span class="modal__text">Описание</span>
-            <textarea class="modal__input modal__input_textarea" name="description" id="description"></textarea>
+            <textarea class="modal__input modal__input_textarea" name="description"
+              id="description"></textarea>
           </label>
 
           <label class="modal__label modal__label_units" for="units">
@@ -140,8 +156,10 @@
           <div class="modal__label modal__label_discount">
             <label class="modal__text" for="discount">Дисконт</label>
             <div class="modal__checkbox-wrapper">
-              <input class="modal__checkbox" type="checkbox" name="discount" id="discount">
-              <input class="modal__input modal__input_discount" type="text" name="discount_count" disabled>
+              <input class="modal__checkbox" type="checkbox" name="discount"
+                id="discount">
+              <input class="modal__input modal__input_discount" type="text"
+                name="discount_count" disabled>
             </div>
           </div>
 
@@ -156,8 +174,10 @@
             <input class="modal__input" type="text" name="price" id="price">
           </label>
 
-          <label tabindex="0" for="image" class="modal__label modal__label_file">Добавить изображение</label>
-          <input class="modal__file visually-hidden" tabindex="-1" type="file" name="image" id="image">
+          <label tabindex="0" for="image" class="modal__label modal__label_file">Добавить
+            изображение</label>
+          <input class="modal__file visually-hidden" tabindex="-1" type="file"
+            name="image" id="image">
         </fieldset>
 
         <div class="modal__footer">
