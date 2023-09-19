@@ -45,7 +45,6 @@ const renderGoods = (itemsArray) => {
     createRow(tbody, item);
   }
 };
-
 // Пример данных
 const itemsData = [
   {
