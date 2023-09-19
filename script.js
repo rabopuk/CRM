@@ -62,3 +62,4 @@ const itemsData = [
 ];
 
 renderGoods(itemsData);
+
