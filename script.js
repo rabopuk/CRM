@@ -1,22 +1,12 @@
-<<<<<<< HEAD
-'use strict';
-
-// Выбор по селектору
-const body = document.body;
-const title = body.querySelector('.modal__title');
-const form = body.querySelector('.modal__form');
-const checkbox = body.querySelector('.modal__checkbox');
-const checkboxInput = body.querySelector('.modal__input_discount');
-=======
 /* eslint-disable max-len */
 'use strict';
 
-// 1. В проекте CMS у элемента с классом overlay уберите класс active
+// В проекте CMS у элемента с классом overlay уберите класс active
 const overlay = document.querySelector('.overlay');
-overlay.classList.toggle('active');
+overlay.classList.remove('active');
 
 
-// 2. Создайте функцию createRow, которая будет получать объект и на основе объекта формировать элемент
+// Создайте функцию createRow, которая будет получать объект и на основе объекта формировать элемент
 const tbody = document.querySelector('.table__body');
 
 let n = 3;
@@ -48,7 +38,7 @@ const createRow = (element, items) => {
 };
 
 
-// 3. Создайте функцию renderGoods, принимает один параметр массив с объектами
+// Создайте функцию renderGoods, принимает один параметр массив с объектами
 // Функция renderGoods перебирает массив и вставляет строки, созданные на основе createRow, в таблицу
 const renderGoods = (itemsArray) => {
   for (const item of itemsArray) {
@@ -72,4 +62,29 @@ const itemsData = [
 ];
 
 renderGoods(itemsData);
->>>>>>> Module_02-lesson_03
+
+
+// При нажатии на кнопку "Добавить товар", открывать модальное окно
+const addBtn = document.querySelector('.panel__add-goods');
+
+addBtn.addEventListener('click', () => {
+  overlay.classList.add('active');
+});
+
+
+// При нажатии на крестик или мимо модального окна, закрывать его
+const modalClose = document.querySelector('.modal__close');
+const overlayModal = document.querySelector('.overlay__modal');
+
+modalClose.addEventListener('click', () => {
+  overlay.classList.remove('active');
+});
+
+overlayModal.addEventListener('click', event => {
+  // Прерывание всплытия
+  event.stopPropagation();
+});
+
+overlay.addEventListener('click', () => {
+  overlay.classList.remove('active');
+});
