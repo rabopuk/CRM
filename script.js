@@ -13,6 +13,7 @@ let n = 3;
 
 const createRow = (element, items) => {
   const newRow = document.createElement('tr');
+  newRow.classList.add('item');
 
   newRow.innerHTML =
     `
@@ -66,25 +67,55 @@ renderGoods(itemsData);
 
 // При нажатии на кнопку "Добавить товар", открывать модальное окно
 const addBtn = document.querySelector('.panel__add-goods');
-
 addBtn.addEventListener('click', () => {
   overlay.classList.add('active');
 });
 
 
 // При нажатии на крестик или мимо модального окна, закрывать его
-const modalClose = document.querySelector('.modal__close');
-const overlayModal = document.querySelector('.overlay__modal');
+// const modalClose = document.querySelector('.modal__close');
+// const overlayModal = document.querySelector('.overlay__modal');
 
-modalClose.addEventListener('click', () => {
-  overlay.classList.remove('active');
+// modalClose.addEventListener('click', () => {
+//   overlay.classList.remove('active');
+// });
+
+// overlayModal.addEventListener('click', event => {
+//   // Прерывание всплытия
+//   event.stopPropagation();
+// });
+
+// overlayModal.addEventListener('click', () => {
+//   overlay.classList.remove('active');
+// });
+
+
+// Закрывать модальное окно без использования методов stopImmediatePropagation и stopPropagation
+overlay.addEventListener('click', e => {
+  const target = e.target;
+
+  if (target === overlay || target.closest('.modal__close')) {
+    overlay.classList.remove('active');
+  }
 });
 
-overlayModal.addEventListener('click', event => {
-  // Прерывание всплытия
-  event.stopPropagation();
-});
 
-overlay.addEventListener('click', () => {
-  overlay.classList.remove('active');
+// При клике на кнопку удалить в таблице, удалять строку из вёрстки и объект из базы данных
+// В консоль выводить базу данных после удаления поля
+const tableBody = document.querySelector('.table__body');
+const tRows = tableBody.querySelectorAll('.item');
+
+tableBody.addEventListener('click', e => {
+  const target = e.target;
+
+  if (target.classList.contains('table__btn_del')) {
+    const item = target.closest('.item');
+
+    if (item) {
+      item.remove();
+
+      const newRows = [...tRows].filter(row => row !== item);
+      console.log('БД: ', [...newRows]);
+    }
+  }
 });
