@@ -217,7 +217,6 @@ const itemsData = [
     price: 150,
   },
 ];
-// Отрендерить товары
 renderGoods(itemsData);
 
 
