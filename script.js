@@ -203,7 +203,6 @@ const renderGoods = itemsArray => {
     item.id = generateRandomId(); // случайный ID
     createRow(item);
   }
-
   // Обновление итоговой стоимости над таблицей после рендеринга товаров
   updateTotalPriceAboveTable();
 };
