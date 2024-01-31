@@ -120,13 +120,7 @@ const handleDeleteButtonClick = (item) => {
 
   updateRowNumbers(tableBody.querySelectorAll('.item'));
 
-  updateTotalPrice()
-    .then(() => {
-      console.log('Element removed from database:', itemId);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
+  updateTotalPrice();
 };
 
 const renderGoods = (itemsArray) => {
