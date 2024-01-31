@@ -61,8 +61,8 @@ const createRowElement = (item, index) => {
 
 const addToDatabase = (id, title, category, units, count, price, db) => {
   const newItem = { id, title, category, units, count, price };
-  db.push(newItem);
-  return newItem;
+  const newDb = [...db, newItem];
+  return { newItem, newDb };
 };
 
 const addRowToTable = (item) => {
@@ -77,11 +77,12 @@ const extractItemDataFromRow = (row) => {
   return { count, price };
 };
 
-const updateRowNumbers = () => {
-  const rows = tableBody.querySelectorAll('.item');
-  rows.forEach((row, index) => {
+const updateRowNumbers = (rows) => {
+  const updatedRows = [...rows];
+  updatedRows.forEach((row, index) => {
     row.querySelector('.table__cell:first-child').textContent = index + 1;
   });
+  return updatedRows;
 };
 
 const serializeForm = (form) => {
@@ -95,11 +96,9 @@ const serializeForm = (form) => {
   return data;
 };
 
-const updateTotalPrice = () => {
-  const rows = [...tableBody.querySelectorAll('.item')];
-  const itemsData = rows.map(extractItemDataFromRow);
+const updateTotalPrice = (rows) => {
+  const itemsData = [...rows].map(extractItemDataFromRow);
   const totalSum = getTotalSum(itemsData);
-
   const totalMain = document.querySelector('.cms__total-price');
   totalMain.textContent = `$ ${+totalSum.toFixed(2)}`;
 };
@@ -112,37 +111,54 @@ const updateModalTotalPrice = (count, price) => {
   modalTotalPrice.textContent = `$ ${+total.toFixed(2)}`;
 };
 
-const handleDeleteButtonClick = (item) => {
+const removeFromDatabase = (itemId, db) => {
+  const index = db.findIndex((dbItem) => dbItem.id === itemId);
+
+  if (index !== -1) {
+    const newDb = [...db.slice(0, index), ...db.slice(index + 1)];
+
+    return { removedItem: db[index], newDb };
+  }
+
+  return { removedItem: null, newDb: db };
+};
+
+const handleDeleteButtonClick = (item, currentDatabase) => {
   const itemIdElement = item.querySelector('.table__cell-id');
   const itemId = parseInt(itemIdElement.textContent.replace('id: ', ''), 10);
 
-  const index = database.findIndex((dbItem) => dbItem.id === itemId);
+  const { removedItem, newDb } = removeFromDatabase(itemId, currentDatabase);
 
-  if (index !== -1) {
-    database.splice(index, 1);
+  if (removedItem) {
     item.remove();
 
-    console.log(database);
+    console.log(newDb);
 
-    updateRowNumbers(tableBody.querySelectorAll('.item'));
+    const updatedRows = updateRowNumbers(tableBody.querySelectorAll('.item'));
 
-    if (database.length === 0) {
+    if (newDb.length === 0) {
       const totalMain = document.querySelector('.cms__total-price');
       totalMain.textContent = '$ 0.00';
     } else {
-      updateTotalPrice();
+      updateTotalPrice(updatedRows);
     }
 
-    return database;
+    return newDb;
   }
 
-  return database;
+  return currentDatabase;
 };
 
 const renderGoods = (itemsArray) => {
-  itemsArray.forEach(addRowToTable);
-  updateRowNumbers(tableBody.querySelectorAll('.item'));
-  updateTotalPrice();
+  tableBody.innerHTML = '';
+
+  itemsArray.forEach((item, index) => {
+    const newRow = createRowElement(item, index);
+    tableBody.appendChild(newRow);
+  });
+
+  const updatedRows = updateRowNumbers(tableBody.querySelectorAll('.item'));
+  updateTotalPrice(updatedRows);
 };
 
 overlay.classList.remove('active');
@@ -168,7 +184,7 @@ tableBody.addEventListener('click', (e) => {
     const item = target.closest('.item');
 
     if (item) {
-      handleDeleteButtonClick(item);
+      database = handleDeleteButtonClick(item, database);
     }
   }
 });
@@ -186,19 +202,20 @@ modalForm.addEventListener('submit', async (e) => {
   const count = parseInt(formData.get('count')) || 0;
   const price = parseFloat(formData.get('price')) || 0;
 
-  const newItem = addToDatabase(newId, formData.get('name'), formData.get('category'), formData.get('units'), count, price, database);
+  const { newItem, newDb } = addToDatabase(newId, formData.get('name'), formData.get('category'), formData.get('units'), count, price, database);
   addRowToTable(newItem);
 
-  console.log(database);
+  console.log(newDb);
   console.log(newItem);
 
   modalForm.reset();
   overlay.classList.remove('active');
 
-  updateRowNumbers(tableBody.querySelectorAll('.item'));
-  updateTotalPrice();
-});
+  const updatedRows = updateRowNumbers(tableBody.querySelectorAll('.item'));
+  updateTotalPrice(updatedRows);
 
+  database = newDb;
+});
 
 countInput.addEventListener('input', () => updateModalTotalPrice(countInput, priceInput));
 
