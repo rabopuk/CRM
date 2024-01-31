@@ -133,7 +133,7 @@ const handleDeleteButtonClick = (item) => {
       updateTotalPrice();
     }
 
-    return database; // Вернем обновленную базу данных
+    return database;
   }
 
   return database;
