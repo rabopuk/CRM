@@ -12,32 +12,66 @@ const priceInput = document.getElementById('price');
 const modalForm = document.querySelector('.modal__form');
 const vendorCodeIdSpan = document.querySelector('.vendor-code__id');
 
+let database = [];
 
-// База данных
-const database = [];
+// Функция для преобразования строки в число
+const parseIntFromString = (str) => parseInt(str);
 
+// Функция для преобразования строки в число с плавающей точкой
+const parseFloatFromString = (str) => parseFloat(str);
 
-// В проекте CMS у элемента с классом overlay уберите класс active
-overlay.classList.remove('active');
+// Функция для вычисления суммы по каждому товару
+const getTotalPerItem = ({ count, price }) => count * price;
 
+// Функция для вычисления общей суммы
+const getTotalSum = (itemsArray = []) => itemsArray.reduce((acc, item) => acc + getTotalPerItem(item), 0);
 
-// Генератор случайного ID
-const generateRandomId = () => Math.floor(Math.random() * 1000000000000000);
+// Создание элемента строки таблицы
+const createRowElement = (item) => {
+  const newRow = document.createElement('tr');
+  const { id, title, category, units, count, price } = item;
+  newRow.classList.add('item');
 
+  newRow.innerHTML = `
+    <td class="table__cell"></td>
+    <td class="table__cell table__cell_left table__cell_name">
+      <span class="table__cell-id">id: ${id}</span>
+      ${title}
+    </td>
+    <td class="table__cell table__cell_left">${category}</td>
+    <td class="table__cell">${units}</td>
+    <td class="table__cell">${count}</td>
+    <td class="table__cell">$${+price.toFixed(2)}</td>
+    <td class="table__cell">$${+(count * price).toFixed(2)}</td>
+    <td class="table__cell table__cell_btn-wrapper">
+      <button class="table__btn table__btn_pic"></button>
+      <button class="table__btn table__btn_edit"></button>
+      <button class="table__btn table__btn_del"></button>
+    </td>
+  `;
 
-// При открытии модального окна генерируется и отображается ID
-addBtn.addEventListener('click', () => {
-  const newId = generateRandomId();
-  vendorCodeIdSpan.textContent = `id: ${newId}`;
-  overlay.classList.add('active');
-});
+  return newRow;
+};
 
+// Запрос к базе данных
+const fetchData = async () => {
+  try {
+    const response = await fetch('goods.json');
+    const data = await response.json();
+    console.log('database:', data);
+
+    return data;
+  } catch (error) {
+    console.error('Ошибка при загрузке данных:', error);
+    return [];
+  }
+};
 
 // Добавить новый товар в базу данных
-const addToDatabase = (id, name, category, units, count, price) => {
+const addToDatabase = (id, title, category, units, count, price) => {
   const newItem = {
     id,
-    name,
+    title,
     category,
     units,
     count,
@@ -49,55 +83,34 @@ const addToDatabase = (id, name, category, units, count, price) => {
   return newItem;
 };
 
+// В проекте CMS у элемента с классом overlay уберите класс active
+overlay.classList.remove('active');
 
-// Создать строку таблицы
-const createRow = (item) => {
-  const newRow = document.createElement('tr');
-  const { id, name, category, units, count, price } = item;
-  newRow.classList.add('item');
+// Генератор случайного ID
+const generateRandomId = () => Math.floor(Math.random() * 1000000000000000);
 
-  newRow.innerHTML = `
-    <td class="table__cell"></td>
-    <td class="table__cell table__cell_left table__cell_name">
-      <span class="table__cell-id">id: ${id}</span>
-      ${name}
-    </td>
-    <td class="table__cell table__cell_left">${category}</td>
-    <td class="table__cell">${units}</td>
-    <td class="table__cell">${count}</td>
-    <td class="table__cell">$${price.toFixed(2)}</td>
-    <td class="table__cell">$${(count * price).toFixed(2)}</td>
-    <td class="table__cell table__cell_btn-wrapper">
-      <button class="table__btn table__btn_pic"></button>
-      <button class="table__btn table__btn_edit"></button>
-      <button class="table__btn table__btn_del"></button>
-    </td>
-  `;
-
-  return newRow;
-};
-
+// При открытии модального окна генерируется и отображается ID
+addBtn.addEventListener('click', () => {
+  const newId = generateRandomId();
+  vendorCodeIdSpan.textContent = `id: ${newId}`;
+  overlay.classList.add('active');
+});
 
 // Обновить общую итоговую стоимость
 const updateTotalPriceMain = () => {
   // Все строки товаров
   const rows = document.querySelectorAll('.item');
 
-  // Сумма
-  let total = 0;
-
-  // Общая сумма
-  rows.forEach(row => {
-    const count = parseInt(row.querySelector('.table__cell:nth-child(5)').textContent);
-    const price = parseFloat(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0;
-    total += count * price;
-  });
+  // Преобразовать NodeList в массив объектов
+  const itemsArray = [...rows].map(row => ({
+    count: parseIntFromString(row.querySelector('.table__cell:nth-child(5)').textContent) || 0,
+    price: parseFloatFromString(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0,
+  }));
 
   // Обновить текст итоговой стоимости
   const totalMain = document.querySelector('.cms__total-price');
-  totalMain.textContent = `$ ${total.toFixed(2)}`;
+  totalMain.textContent = `$ ${+getTotalSum(itemsArray).toFixed(2)}`;
 };
-
 
 // Закрывать модальное окно без использования методов stopImmediatePropagation и stopPropagation
 overlay.addEventListener('click', e => {
@@ -108,7 +121,6 @@ overlay.addEventListener('click', e => {
   }
 });
 
-
 // Обновить порядковые номера в таблице
 const updateRowNumbers = () => {
   const rows = tableBody.querySelectorAll('.item');
@@ -118,6 +130,22 @@ const updateRowNumbers = () => {
   });
 };
 
+// Чистая функция для добавления новой строки в таблицу
+const addRowToTable = (item) => {
+  const newRow = createRowElement(item);
+  tableBody.appendChild(newRow);
+};
+
+// Создайте функцию renderGoods, принимает один параметр массив с объектами
+// Функция renderGoods перебирает массив и вставляет строки, созданные на основе createRow, в таблицу
+const renderGoods = itemsArray => {
+  for (const item of itemsArray) {
+    addRowToTable(item);
+  }
+
+  updateRowNumbers();
+  updateTotalPriceMain();
+};
 
 // При клике на кнопку удалить в таблице, удалять строку из вёрстки и объект из базы данных
 tableBody.addEventListener('click', e => {
@@ -128,7 +156,7 @@ tableBody.addEventListener('click', e => {
 
     if (item) {
       // Получить ID товара для удаления
-      const itemId = parseInt(item.querySelector('.table__cell:nth-child(1)').textContent);
+      const itemId = parseIntFromString(item.querySelector('.table__cell:nth-child(1)').textContent);
 
       // Удалить товар из базы данных по ID
       const index = database.findIndex(item => item.id === itemId);
@@ -138,6 +166,8 @@ tableBody.addEventListener('click', e => {
 
       item.remove();
 
+      console.log('database: ', database);
+
       // Обновить порядковые номера в таблице после удаления товара
       updateRowNumbers();
       // Обновить итоговую стоимость после удаления товара
@@ -145,7 +175,6 @@ tableBody.addEventListener('click', e => {
     }
   }
 });
-
 
 // В форме если поставить чекбокс должен быть разблокирован input с name discount_count
 discountCheckbox.addEventListener('change', () => {
@@ -159,24 +188,22 @@ discountCheckbox.addEventListener('change', () => {
   }
 });
 
-
 // Пересчёт итоговой стоимости в модальном окне
 const recalculateModalPrice = () => {
   // Значения из полей Количество и Цена
-  const count = parseInt(countInput.value) || 0;
-  const price = parseFloat(priceInput.value) || 0;
+  const count = parseIntFromString(countInput.value) || 0;
+  const price = parseFloatFromString(priceInput.value) || 0;
 
   // Итоговая стоимость при добавлении товара
   const total = count * price;
 
   // Обновить текст итоговой стоимости в модальном окне
   const modalTotalPrice = document.querySelector('.modal__total-price');
-  modalTotalPrice.textContent = `${total.toFixed(2)}`;
+  modalTotalPrice.textContent = `${+total.toFixed(2)}`;
 };
 
 countInput.addEventListener('input', recalculateModalPrice);
 priceInput.addEventListener('input', recalculateModalPrice);
-
 
 // Сериализация формы в объект FormData
 const serializeForm = form => {
@@ -195,13 +222,19 @@ const serializeForm = form => {
   return data;
 };
 
-
 // Обработчик события отправки формы
-modalForm.addEventListener('submit', e => {
+modalForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  // Загрузка данных, если они еще не загружены
+  if (database.length === 0) {
+    database = await fetchData();
+    renderGoods(database);
+  }
+
   // Извлечь ID из span
-  const newId = parseInt(vendorCodeIdSpan.textContent.replace('id: ', ''));
+  const newId = parseIntFromString(vendorCodeIdSpan.textContent.replace('id: ', ''));
+
   // Сериализация формы
   const formData = serializeForm(modalForm);
 
@@ -211,14 +244,15 @@ modalForm.addEventListener('submit', e => {
     formData.get('name'),
     formData.get('category'),
     formData.get('units'),
-    parseInt(formData.get('count')),
-    parseFloat(formData.get('price')),
+    parseIntFromString(formData.get('count')),
+    parseFloatFromString(formData.get('price')),
   );
 
-  // Новая строка для таблицы
-  const newRow = createRow(newItem);
+  // console.log('newItem: ', newItem);
+  // console.log('database: ', database);
+
   // Добавить новую строку в таблицу
-  tableBody.appendChild(newRow);
+  addRowToTable(newItem);
 
   // Очистить поля формы после добавления
   modalForm.reset();
@@ -230,27 +264,12 @@ modalForm.addEventListener('submit', e => {
   updateTotalPriceMain();
 });
 
-
-// Создайте функцию renderGoods, принимает один параметр массив с объектами
-// Функция renderGoods перебирает массив и вставляет строки, созданные на основе createRow, в таблицу
-const renderGoods = itemsArray => {
-  for (const item of itemsArray) {
-    // Строка таблицы на основе товара
-    const newRow = createRow(item);
-    tableBody.appendChild(newRow);
-  }
-
-  updateRowNumbers();
-  updateTotalPriceMain();
-};
-
-// Пример добавления товаров в базу данных
-addToDatabase(generateRandomId(), 'Товар 1', 'Категория 1', 'шт', 10, 25.99);
-addToDatabase(generateRandomId(), 'Товар 2', 'Категория 2', 'кг', 5, 15.49);
-
 // Отобразить товары после их добавления в базу данных
 renderGoods(database);
 
-
 // Обновить итоговую стоимость после загрузки страницы
-window.addEventListener('load', updateTotalPriceMain);
+window.addEventListener('load', async () => {
+  database = await fetchData();
+  renderGoods(database);
+  updateTotalPriceMain();
+});
