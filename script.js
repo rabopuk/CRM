@@ -74,10 +74,6 @@ const addToDatabase = (id, title, category, units, count, price, db) => {
 
 const generateRandomId = () => Math.floor(Math.random() * 1000000000000000);
 
-const updateTotalPriceMain = (itemsArray) => {
-  const totalMain = document.querySelector('.cms__total-price');
-  totalMain.textContent = `$ ${+getTotalSum(itemsArray).toFixed(2)}`;
-};
 
 const updateRowNumbers = (rows) => {
   rows.forEach((row, index) => {
@@ -107,6 +103,22 @@ const serializeForm = (form) => {
   return data;
 };
 
+const extractItemDataFromRow = (row) => {
+  const count = parseInt(row.querySelector('.table__cell:nth-child(5)').textContent) || 0;
+  const price = parseFloat(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0;
+
+  return { count, price };
+};
+
+const updateTotalPrice = () => {
+  const rows = [...tableBody.querySelectorAll('.item')];
+  const itemsData = rows.map(extractItemDataFromRow);
+  const totalSum = getTotalSum(itemsData);
+
+  const totalMain = document.querySelector('.cms__total-price');
+  totalMain.textContent = `$ ${+totalSum.toFixed(2)}`;
+};
+
 const updateModalTotalPrice = (count, price) => {
   const modalTotalPrice = document.querySelector('.modal__total-price');
 
@@ -117,13 +129,26 @@ const updateModalTotalPrice = (count, price) => {
   modalTotalPrice.textContent = `$ ${+total.toFixed(2)}`;
 };
 
+const handleDeleteButtonClick = (item) => {
+  const itemId = parseInt(item.querySelector('.table__cell:nth-child(1)').textContent);
+  const index = database.findIndex((item) => item.id === itemId);
+
+  if (index !== -1) {
+    database.splice(index, 1);
+  }
+
+  item.remove();
+  updateRowNumbers(tableBody.querySelectorAll('.item'));
+  updateTotalPrice();
+};
+
 const renderGoods = (itemsArray) => {
   itemsArray.forEach((item) => {
     addRowToTable(item);
   });
 
   updateRowNumbers(tableBody.querySelectorAll('.item'));
-  updateTotalPriceMain(itemsArray);
+  updateTotalPrice(itemsArray);
 };
 
 overlay.classList.remove('active');
@@ -149,19 +174,7 @@ tableBody.addEventListener('click', (e) => {
     const item = target.closest('.item');
 
     if (item) {
-      const itemId = parseInt(item.querySelector('.table__cell:nth-child(1)').textContent);
-      const index = database.findIndex((item) => item.id === itemId);
-
-      if (index !== -1) {
-        database.splice(index, 1);
-      }
-
-      item.remove();
-      updateRowNumbers(tableBody.querySelectorAll('.item'));
-      updateTotalPriceMain([...tableBody.querySelectorAll('.item')].map(row => ({
-        count: parseInt(row.querySelector('.table__cell:nth-child(5)').textContent) || 0,
-        price: parseFloat(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0,
-      })));
+      handleDeleteButtonClick(item);
     }
   }
 });
@@ -186,8 +199,8 @@ modalForm.addEventListener('submit', async (e) => {
   const newId = parseInt(vendorCodeIdSpan.textContent.replace('id: ', ''));
   const formData = serializeForm(e.target);
 
-  const count = parseInt(formData.get('count'));
-  const price = parseFloat(formData.get('price'));
+  const count = parseInt(formData.get('count')) || 0;
+  const price = parseFloat(formData.get('price')) || 0;
 
   const newItem = addToDatabase(
     newId,
@@ -199,27 +212,24 @@ modalForm.addEventListener('submit', async (e) => {
     database,
   );
 
+  console.log('newItem: ', newItem);
+  console.log('database: ', database);
+
   addRowToTable(newItem);
 
   modalForm.reset();
   overlay.classList.remove('active');
 
   updateRowNumbers(tableBody.querySelectorAll('.item'));
-  updateTotalPriceMain([...tableBody.querySelectorAll('.item')].map(row => ({
-    count: parseInt(row.querySelector('.table__cell:nth-child(5)').textContent) || 0,
-    price: parseFloat(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0,
-  })));
+  updateTotalPrice();
 });
 
 countInput.addEventListener('input', () => updateModalTotalPrice(countInput, priceInput));
 
 priceInput.addEventListener('input', () => updateModalTotalPrice(countInput, priceInput));
 
-window.addEventListener('load', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
   database = await fetchData();
   renderGoods(database);
-  updateTotalPriceMain([...tableBody.querySelectorAll('.item')].map(row => ({
-    count: parseInt(row.querySelector('.table__cell:nth-child(5)').textContent) || 0,
-    price: parseFloat(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0,
-  })));
+  updateTotalPrice();
 });
