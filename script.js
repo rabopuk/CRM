@@ -7,9 +7,9 @@ const addBtn = document.querySelector('.panel__add-goods');
 const tableBody = document.querySelector('.table__body');
 const discountCheckbox = document.getElementById('discount');
 const discountCountInput = document.querySelector('.modal__input_discount');
+const modalForm = document.querySelector('.modal__form');
 const countInput = document.getElementById('count');
 const priceInput = document.getElementById('price');
-const modalForm = document.querySelector('.modal__form');
 const vendorCodeIdSpan = document.querySelector('.vendor-code__id');
 
 let database = [];
@@ -189,23 +189,6 @@ discountCheckbox.addEventListener('change', () => {
   }
 });
 
-// Пересчёт итоговой стоимости в модальном окне
-const recalculateModalPrice = () => {
-  // Значения из полей Количество и Цена
-  const count = parseIntFromString(countInput.value) || 0;
-  const price = parseFloatFromString(priceInput.value) || 0;
-
-  // Итоговая стоимость при добавлении товара
-  const total = count * price;
-
-  // Обновить текст итоговой стоимости в модальном окне
-  const modalTotalPrice = document.querySelector('.modal__total-price');
-  modalTotalPrice.textContent = `$ ${+total.toFixed(2)}`;
-};
-
-countInput.addEventListener('input', recalculateModalPrice);
-priceInput.addEventListener('input', recalculateModalPrice);
-
 // Сериализация формы в объект FormData
 const serializeForm = form => {
   const { elements } = form;
@@ -221,6 +204,17 @@ const serializeForm = form => {
     });
 
   return data;
+};
+
+// Пересчёт итоговой стоимости в модальном окне
+const updateModalTotalPrice = (count, price) => {
+  const modalTotalPrice = document.querySelector('.modal__total-price');
+
+  const newCount = parseIntFromString(count.value) || 0;
+  const newPrice = parseFloatFromString(price.value) || 0;
+  const total = newCount * newPrice;
+
+  modalTotalPrice.textContent = `$ ${+total.toFixed(2)}`;
 };
 
 // Обработчик события отправки формы
@@ -239,9 +233,9 @@ modalForm.addEventListener('submit', async (e) => {
   // Сериализация формы
   const formData = serializeForm(e.target);
 
-  // Обнулить текст итоговой стоимости в модальном окне
-  const modalTotalPrice = document.querySelector('.modal__total-price');
-  modalTotalPrice.textContent = '$ 0.00';
+  // Получить значения count и price из формы
+  const count = parseIntFromString(formData.get('count'));
+  const price = parseFloatFromString(formData.get('price'));
 
   // Добавление нового товара в базу данных
   const newItem = addToDatabase(
@@ -249,8 +243,8 @@ modalForm.addEventListener('submit', async (e) => {
     formData.get('name'),
     formData.get('category'),
     formData.get('units'),
-    parseIntFromString(formData.get('count')),
-    parseFloatFromString(formData.get('price')),
+    count,
+    price,
     database,
   );
 
@@ -269,6 +263,10 @@ modalForm.addEventListener('submit', async (e) => {
   // Обновить итоговую стоимость всех товаров
   updateTotalPriceMain();
 });
+
+// Слушатели событий input для обновления modalTotalPrice в реальном времени
+countInput.addEventListener('input', () => updateModalTotalPrice(countInput, priceInput));
+priceInput.addEventListener('input', () => updateModalTotalPrice(countInput, priceInput));
 
 // Отобразить товары после их добавления в базу данных
 renderGoods(database);
