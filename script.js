@@ -77,7 +77,8 @@ const extractItemDataFromRow = (row) => {
   return { count, price };
 };
 
-const updateRowNumbers = (rows) => {
+const updateRowNumbers = () => {
+  const rows = tableBody.querySelectorAll('.item');
   rows.forEach((row, index) => {
     row.querySelector('.table__cell:first-child').textContent = index + 1;
   });
@@ -121,6 +122,8 @@ const handleDeleteButtonClick = (item) => {
     database.splice(index, 1);
     item.remove();
 
+    console.log(database);
+
     updateRowNumbers(tableBody.querySelectorAll('.item'));
 
     if (database.length === 0) {
@@ -129,7 +132,11 @@ const handleDeleteButtonClick = (item) => {
     } else {
       updateTotalPrice();
     }
+
+    return database; // Вернем обновленную базу данных
   }
+
+  return database;
 };
 
 const renderGoods = (itemsArray) => {
@@ -173,11 +180,6 @@ discountCheckbox.addEventListener('change', () => {
 modalForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  if (database.length === 0) {
-    database = await fetchData();
-    renderGoods(database);
-  }
-
   const newId = parseInt(vendorCodeIdSpan.textContent.replace('id: ', ''));
   const formData = serializeForm(e.target);
 
@@ -196,6 +198,7 @@ modalForm.addEventListener('submit', async (e) => {
   updateRowNumbers(tableBody.querySelectorAll('.item'));
   updateTotalPrice();
 });
+
 
 countInput.addEventListener('input', () => updateModalTotalPrice(countInput, priceInput));
 
