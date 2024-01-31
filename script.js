@@ -77,7 +77,7 @@ const extractItemDataFromRow = (row) => {
   return { count, price };
 };
 
-const updateRowNumbers = async (rows) => {
+const updateRowNumbers = (rows) => {
   rows.forEach((row, index) => {
     row.querySelector('.table__cell:first-child').textContent = index + 1;
   });
@@ -94,7 +94,7 @@ const serializeForm = (form) => {
   return data;
 };
 
-const updateTotalPrice = async () => {
+const updateTotalPrice = () => {
   const rows = [...tableBody.querySelectorAll('.item')];
   const itemsData = rows.map(extractItemDataFromRow);
   const totalSum = getTotalSum(itemsData);
@@ -121,6 +121,7 @@ const handleDeleteButtonClick = (item) => {
   updateRowNumbers(tableBody.querySelectorAll('.item'));
 
   updateTotalPrice();
+  console.log('database: ', database);
 };
 
 const renderGoods = (itemsArray) => {
