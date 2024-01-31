@@ -117,10 +117,11 @@ const handleDeleteButtonClick = (item) => {
 
   if (index !== -1) {
     database.splice(index, 1);
-    item.remove();
-    updateRowNumbers(tableBody.querySelectorAll('.item'));
-    updateTotalPrice();
   }
+
+  item.remove();
+  updateRowNumbers(tableBody.querySelectorAll('.item'));
+  updateTotalPrice();
 };
 
 const renderGoods = (itemsArray) => {
