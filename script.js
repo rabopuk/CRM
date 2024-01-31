@@ -83,18 +83,8 @@ const addToDatabase = (id, title, category, units, count, price, db) => {
   return newItem;
 };
 
-// В проекте CMS у элемента с классом overlay уберите класс active
-overlay.classList.remove('active');
-
 // Генератор случайного ID
 const generateRandomId = () => Math.floor(Math.random() * 1000000000000000);
-
-// При открытии модального окна генерируется и отображается ID
-addBtn.addEventListener('click', () => {
-  const newId = generateRandomId();
-  vendorCodeIdSpan.textContent = `id: ${newId}`;
-  overlay.classList.add('active');
-});
 
 // Обновить общую итоговую стоимость
 const updateTotalPriceMain = () => {
@@ -111,15 +101,6 @@ const updateTotalPriceMain = () => {
   const totalMain = document.querySelector('.cms__total-price');
   totalMain.textContent = `$ ${+getTotalSum(itemsArray).toFixed(2)}`;
 };
-
-// Закрывать модальное окно без использования методов stopImmediatePropagation и stopPropagation
-overlay.addEventListener('click', e => {
-  const target = e.target;
-
-  if (target === overlay || target.closest('.modal__close')) {
-    overlay.classList.remove('active');
-  }
-});
 
 // Обновить порядковые номера в таблице
 const updateRowNumbers = () => {
@@ -146,6 +127,53 @@ const renderGoods = itemsArray => {
   updateRowNumbers();
   updateTotalPriceMain();
 };
+
+// Сериализация формы в объект FormData
+const serializeForm = form => {
+  const { elements } = form;
+  const data = new FormData();
+
+  [...elements]
+    .filter(item => !!item.name)
+    .forEach(element => {
+      const { name } = element;
+      const value = element.value;
+
+      data.append(name, value);
+    });
+
+  return data;
+};
+
+// Пересчёт итоговой стоимости в модальном окне
+const updateModalTotalPrice = (count, price) => {
+  const modalTotalPrice = document.querySelector('.modal__total-price');
+
+  const newCount = parseIntFromString(count.value) || 0;
+  const newPrice = parseFloatFromString(price.value) || 0;
+  const total = newCount * newPrice;
+
+  modalTotalPrice.textContent = `$ ${+total.toFixed(2)}`;
+};
+
+// В проекте CMS у элемента с классом overlay уберите класс active
+overlay.classList.remove('active');
+
+// При открытии модального окна генерируется и отображается ID
+addBtn.addEventListener('click', () => {
+  const newId = generateRandomId();
+  vendorCodeIdSpan.textContent = `id: ${newId}`;
+  overlay.classList.add('active');
+});
+
+// Закрывать модальное окно без использования методов stopImmediatePropagation и stopPropagation
+overlay.addEventListener('click', e => {
+  const target = e.target;
+
+  if (target === overlay || target.closest('.modal__close')) {
+    overlay.classList.remove('active');
+  }
+});
 
 // При клике на кнопку удалить в таблице, удалять строку из вёрстки и объект из базы данных
 tableBody.addEventListener('click', e => {
@@ -188,34 +216,6 @@ discountCheckbox.addEventListener('change', () => {
     discountCountInput.disabled = true;
   }
 });
-
-// Сериализация формы в объект FormData
-const serializeForm = form => {
-  const { elements } = form;
-  const data = new FormData();
-
-  [...elements]
-    .filter(item => !!item.name)
-    .forEach(element => {
-      const { name } = element;
-      const value = element.value;
-
-      data.append(name, value);
-    });
-
-  return data;
-};
-
-// Пересчёт итоговой стоимости в модальном окне
-const updateModalTotalPrice = (count, price) => {
-  const modalTotalPrice = document.querySelector('.modal__total-price');
-
-  const newCount = parseIntFromString(count.value) || 0;
-  const newPrice = parseFloatFromString(price.value) || 0;
-  const total = newCount * newPrice;
-
-  modalTotalPrice.textContent = `$ ${+total.toFixed(2)}`;
-};
 
 // Обработчик события отправки формы
 modalForm.addEventListener('submit', async (e) => {
