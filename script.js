@@ -14,13 +14,28 @@ const vendorCodeIdSpan = document.querySelector('.vendor-code__id');
 
 let database = [];
 
+const generateRandomId = () => Math.floor(Math.random() * 1000000000000000);
+
 const getTotalPerItem = ({ count, price }) => count * price;
 
 const getTotalSum = (itemsArray = []) => itemsArray.reduce((acc, item) => acc + getTotalPerItem(item), 0);
 
+const fetchData = async () => {
+  try {
+    const response = await fetch('goods.json');
+    const data = await response.json();
+    console.log('database:', data);
+
+    return data;
+  } catch (error) {
+    console.error('Ошибка при загрузке данных:', error);
+    return [];
+  }
+};
+
 const createRowElement = (item, index) => {
-  const newRow = document.createElement('tr');
   const { id, title, category, units, count, price } = item;
+  const newRow = document.createElement('tr');
   newRow.classList.add('item');
 
   newRow.innerHTML = `
@@ -44,41 +59,10 @@ const createRowElement = (item, index) => {
   return newRow;
 };
 
-const fetchData = async () => {
-  try {
-    const response = await fetch('goods.json');
-    const data = await response.json();
-    console.log('database:', data);
-
-    return data;
-  } catch (error) {
-    console.error('Ошибка при загрузке данных:', error);
-    return [];
-  }
-};
-
 const addToDatabase = (id, title, category, units, count, price, db) => {
-  const newItem = {
-    id,
-    title,
-    category,
-    units,
-    count,
-    price,
-  };
-
+  const newItem = { id, title, category, units, count, price };
   db.push(newItem);
-
   return newItem;
-};
-
-const generateRandomId = () => Math.floor(Math.random() * 1000000000000000);
-
-
-const updateRowNumbers = (rows) => {
-  rows.forEach((row, index) => {
-    row.querySelector('.table__cell:first-child').textContent = index + 1;
-  });
 };
 
 const addRowToTable = (item) => {
@@ -87,27 +71,27 @@ const addRowToTable = (item) => {
   tableBody.appendChild(newRow);
 };
 
+const extractItemDataFromRow = (row) => {
+  const count = parseInt(row.querySelector('.table__cell:nth-child(5)').textContent) || 0;
+  const price = parseFloat(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0;
+  return { count, price };
+};
+
+const updateRowNumbers = (rows) => {
+  rows.forEach((row, index) => {
+    row.querySelector('.table__cell:first-child').textContent = index + 1;
+  });
+};
+
 const serializeForm = (form) => {
   const { elements } = form;
   const data = new FormData();
 
   [...elements]
     .filter((item) => !!item.name)
-    .forEach((element) => {
-      const { name } = element;
-      const value = element.value;
-
-      data.append(name, value);
-    });
+    .forEach(({ name, value }) => data.append(name, value));
 
   return data;
-};
-
-const extractItemDataFromRow = (row) => {
-  const count = parseInt(row.querySelector('.table__cell:nth-child(5)').textContent) || 0;
-  const price = parseFloat(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0;
-
-  return { count, price };
 };
 
 const updateTotalPrice = () => {
@@ -121,11 +105,9 @@ const updateTotalPrice = () => {
 
 const updateModalTotalPrice = (count, price) => {
   const modalTotalPrice = document.querySelector('.modal__total-price');
-
   const newCount = parseInt(count.value) || 0;
   const newPrice = parseFloat(price.value) || 0;
   const total = newCount * newPrice;
-
   modalTotalPrice.textContent = `$ ${+total.toFixed(2)}`;
 };
 
@@ -135,20 +117,16 @@ const handleDeleteButtonClick = (item) => {
 
   if (index !== -1) {
     database.splice(index, 1);
+    item.remove();
+    updateRowNumbers(tableBody.querySelectorAll('.item'));
+    updateTotalPrice();
   }
-
-  item.remove();
-  updateRowNumbers(tableBody.querySelectorAll('.item'));
-  updateTotalPrice();
 };
 
 const renderGoods = (itemsArray) => {
-  itemsArray.forEach((item) => {
-    addRowToTable(item);
-  });
-
+  itemsArray.forEach(addRowToTable);
   updateRowNumbers(tableBody.querySelectorAll('.item'));
-  updateTotalPrice(itemsArray);
+  updateTotalPrice();
 };
 
 overlay.classList.remove('active');
@@ -180,12 +158,7 @@ tableBody.addEventListener('click', (e) => {
 });
 
 discountCheckbox.addEventListener('change', () => {
-  if (discountCheckbox.checked) {
-    discountCountInput.disabled = false;
-  } else {
-    discountCountInput.value = '';
-    discountCountInput.disabled = true;
-  }
+  discountCountInput.disabled = !discountCheckbox.checked;
 });
 
 modalForm.addEventListener('submit', async (e) => {
@@ -202,20 +175,11 @@ modalForm.addEventListener('submit', async (e) => {
   const count = parseInt(formData.get('count')) || 0;
   const price = parseFloat(formData.get('price')) || 0;
 
-  const newItem = addToDatabase(
-    newId,
-    formData.get('name'),
-    formData.get('category'),
-    formData.get('units'),
-    count,
-    price,
-    database,
-  );
-
-  console.log('newItem: ', newItem);
-  console.log('database: ', database);
-
+  const newItem = addToDatabase(newId, formData.get('name'), formData.get('category'), formData.get('units'), count, price, database);
   addRowToTable(newItem);
+
+  console.log(database);
+  console.log(newItem);
 
   modalForm.reset();
   overlay.classList.remove('active');
@@ -231,5 +195,4 @@ priceInput.addEventListener('input', () => updateModalTotalPrice(countInput, pri
 document.addEventListener('DOMContentLoaded', async () => {
   database = await fetchData();
   renderGoods(database);
-  updateTotalPrice();
 });
