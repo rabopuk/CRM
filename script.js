@@ -29,6 +29,7 @@ const fetchData = async () => {
     return data;
   } catch (error) {
     console.error('Ошибка при загрузке данных:', error);
+
     return [];
   }
 };
@@ -62,6 +63,7 @@ const createRowElement = (item, index) => {
 const addToDatabase = (id, title, category, units, count, price, db) => {
   const newItem = { id, title, category, units, count, price };
   const newDb = [...db, newItem];
+
   return { newItem, newDb };
 };
 
@@ -74,15 +76,17 @@ const addRowToTable = (item) => {
 const extractItemDataFromRow = (row) => {
   const count = parseInt(row.querySelector('.table__cell:nth-child(5)').textContent) || 0;
   const price = parseFloat(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0;
+
   return { count, price };
 };
 
 const updateRowNumbers = (rows) => {
-  const updatedRows = [...rows];
-  updatedRows.forEach((row, index) => {
+  const rowNumbers = [...rows];
+  rowNumbers.forEach((row, index) => {
     row.querySelector('.table__cell:first-child').textContent = index + 1;
   });
-  return updatedRows;
+
+  return rowNumbers;
 };
 
 const serializeForm = (form) => {
@@ -157,8 +161,8 @@ const renderGoods = (itemsArray) => {
     tableBody.appendChild(newRow);
   });
 
-  const updatedRows = updateRowNumbers(tableBody.querySelectorAll('.item'));
-  updateTotalPrice(updatedRows);
+  const rowNumbers = updateRowNumbers(tableBody.querySelectorAll('.item'));
+  updateTotalPrice(rowNumbers);
 };
 
 overlay.classList.remove('active');
