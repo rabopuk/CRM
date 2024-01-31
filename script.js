@@ -14,10 +14,6 @@ const vendorCodeIdSpan = document.querySelector('.vendor-code__id');
 
 let database = [];
 
-const parseIntFromString = (str) => parseInt(str);
-
-const parseFloatFromString = (str) => parseFloat(str);
-
 const getTotalPerItem = ({ count, price }) => count * price;
 
 const getTotalSum = (itemsArray = []) => itemsArray.reduce((acc, item) => acc + getTotalPerItem(item), 0);
@@ -95,15 +91,6 @@ const addRowToTable = (item) => {
   tableBody.appendChild(newRow);
 };
 
-const renderGoods = (itemsArray) => {
-  itemsArray.forEach((item) => {
-    addRowToTable(item);
-  });
-
-  updateRowNumbers(tableBody.querySelectorAll('.item'));
-  updateTotalPriceMain(itemsArray);
-};
-
 const serializeForm = (form) => {
   const { elements } = form;
   const data = new FormData();
@@ -123,11 +110,20 @@ const serializeForm = (form) => {
 const updateModalTotalPrice = (count, price) => {
   const modalTotalPrice = document.querySelector('.modal__total-price');
 
-  const newCount = parseIntFromString(count.value) || 0;
-  const newPrice = parseFloatFromString(price.value) || 0;
+  const newCount = parseInt(count.value) || 0;
+  const newPrice = parseFloat(price.value) || 0;
   const total = newCount * newPrice;
 
   modalTotalPrice.textContent = `$ ${+total.toFixed(2)}`;
+};
+
+const renderGoods = (itemsArray) => {
+  itemsArray.forEach((item) => {
+    addRowToTable(item);
+  });
+
+  updateRowNumbers(tableBody.querySelectorAll('.item'));
+  updateTotalPriceMain(itemsArray);
 };
 
 overlay.classList.remove('active');
@@ -153,7 +149,7 @@ tableBody.addEventListener('click', (e) => {
     const item = target.closest('.item');
 
     if (item) {
-      const itemId = parseIntFromString(item.querySelector('.table__cell:nth-child(1)').textContent);
+      const itemId = parseInt(item.querySelector('.table__cell:nth-child(1)').textContent);
       const index = database.findIndex((item) => item.id === itemId);
 
       if (index !== -1) {
@@ -163,8 +159,8 @@ tableBody.addEventListener('click', (e) => {
       item.remove();
       updateRowNumbers(tableBody.querySelectorAll('.item'));
       updateTotalPriceMain([...tableBody.querySelectorAll('.item')].map(row => ({
-        count: parseIntFromString(row.querySelector('.table__cell:nth-child(5)').textContent) || 0,
-        price: parseFloatFromString(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0,
+        count: parseInt(row.querySelector('.table__cell:nth-child(5)').textContent) || 0,
+        price: parseFloat(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0,
       })));
     }
   }
@@ -187,11 +183,11 @@ modalForm.addEventListener('submit', async (e) => {
     renderGoods(database);
   }
 
-  const newId = parseIntFromString(vendorCodeIdSpan.textContent.replace('id: ', ''));
+  const newId = parseInt(vendorCodeIdSpan.textContent.replace('id: ', ''));
   const formData = serializeForm(e.target);
 
-  const count = parseIntFromString(formData.get('count'));
-  const price = parseFloatFromString(formData.get('price'));
+  const count = parseInt(formData.get('count'));
+  const price = parseFloat(formData.get('price'));
 
   const newItem = addToDatabase(
     newId,
@@ -210,8 +206,8 @@ modalForm.addEventListener('submit', async (e) => {
 
   updateRowNumbers(tableBody.querySelectorAll('.item'));
   updateTotalPriceMain([...tableBody.querySelectorAll('.item')].map(row => ({
-    count: parseIntFromString(row.querySelector('.table__cell:nth-child(5)').textContent) || 0,
-    price: parseFloatFromString(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0,
+    count: parseInt(row.querySelector('.table__cell:nth-child(5)').textContent) || 0,
+    price: parseFloat(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0,
   })));
 });
 
@@ -223,7 +219,7 @@ window.addEventListener('load', async () => {
   database = await fetchData();
   renderGoods(database);
   updateTotalPriceMain([...tableBody.querySelectorAll('.item')].map(row => ({
-    count: parseIntFromString(row.querySelector('.table__cell:nth-child(5)').textContent) || 0,
-    price: parseFloatFromString(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0,
+    count: parseInt(row.querySelector('.table__cell:nth-child(5)').textContent) || 0,
+    price: parseFloat(row.querySelector('.table__cell:nth-child(6)').textContent.replace('$', '')) || 0,
   })));
 });
