@@ -113,34 +113,24 @@ const updateModalTotalPrice = (count, price) => {
 
 const handleDeleteButtonClick = (item) => {
   const itemIdElement = item.querySelector('.table__cell-id');
+  const itemId = parseInt(itemIdElement.textContent.replace('id: ', ''), 10);
 
-  if (itemIdElement) {
-    const itemId = parseInt(itemIdElement.textContent.replace('id: ', ''), 10);
+  const index = database.findIndex((dbItem) => dbItem.id === itemId);
 
-    const index = database.findIndex((dbItem) => dbItem.id === itemId);
+  if (index !== -1) {
+    database.splice(index, 1);
+    item.remove();
 
-    if (index !== -1) {
-      database.splice(index, 1);
-      item.remove();
+    updateRowNumbers(tableBody.querySelectorAll('.item'));
 
-      updateRowNumbers(tableBody.querySelectorAll('.item'));
-
-      if (database.length === 0) {
-        const totalMain = document.querySelector('.cms__total-price');
-        totalMain.textContent = '$ 0.00';
-      } else {
-        updateTotalPrice();
-      }
-
-      console.log('Element removed from database:', itemId);
+    if (database.length === 0) {
+      const totalMain = document.querySelector('.cms__total-price');
+      totalMain.textContent = '$ 0.00';
     } else {
-      console.log('Element not found in database:', itemId);
+      updateTotalPrice();
     }
-  } else {
-    console.error('Unable to find itemId element');
   }
 };
-
 
 const renderGoods = (itemsArray) => {
   itemsArray.forEach(addRowToTable);
