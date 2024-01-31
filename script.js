@@ -112,17 +112,35 @@ const updateModalTotalPrice = (count, price) => {
 };
 
 const handleDeleteButtonClick = (item) => {
-  const itemId = parseInt(item.querySelector('.table__cell:nth-child(1)').textContent);
+  const itemIdElement = item.querySelector('.table__cell-id');
 
-  database = database.filter((dbItem) => dbItem.id !== itemId);
+  if (itemIdElement) {
+    const itemId = parseInt(itemIdElement.textContent.replace('id: ', ''), 10);
 
-  item.remove();
+    const index = database.findIndex((dbItem) => dbItem.id === itemId);
 
-  updateRowNumbers(tableBody.querySelectorAll('.item'));
+    if (index !== -1) {
+      database.splice(index, 1);
+      item.remove();
 
-  updateTotalPrice();
-  console.log('database: ', database);
+      updateRowNumbers(tableBody.querySelectorAll('.item'));
+
+      if (database.length === 0) {
+        const totalMain = document.querySelector('.cms__total-price');
+        totalMain.textContent = '$ 0.00';
+      } else {
+        updateTotalPrice();
+      }
+
+      console.log('Element removed from database:', itemId);
+    } else {
+      console.log('Element not found in database:', itemId);
+    }
+  } else {
+    console.error('Unable to find itemId element');
+  }
 };
+
 
 const renderGoods = (itemsArray) => {
   itemsArray.forEach(addRowToTable);
