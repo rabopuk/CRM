@@ -130,7 +130,7 @@ const updateRowNumbers = () => {
   });
 };
 
-// Чистая функция для добавления новой строки в таблицу
+// Функция для добавления новой строки в таблицу
 const addRowToTable = (item) => {
   const newRow = createRowElement(item);
   tableBody.appendChild(newRow);
@@ -160,6 +160,7 @@ tableBody.addEventListener('click', e => {
 
       // Удалить товар из базы данных по ID
       const index = database.findIndex(item => item.id === itemId);
+
       if (index !== -1) {
         database.splice(index, 1);
       }
@@ -176,7 +177,7 @@ tableBody.addEventListener('click', e => {
   }
 });
 
-// В форме если поставить чекбокс должен быть разблокирован input с name discount_count
+// В форме, если поставить чекбокс, должен быть разблокирован input с name discount_count
 discountCheckbox.addEventListener('change', () => {
   // Если чекбокс отмечен, разблокировать поле ввода
   if (discountCheckbox.checked) {
@@ -236,7 +237,7 @@ modalForm.addEventListener('submit', async (e) => {
   const newId = parseIntFromString(vendorCodeIdSpan.textContent.replace('id: ', ''));
 
   // Сериализация формы
-  const formData = serializeForm(modalForm);
+  const formData = serializeForm(e.target);
 
   // Добавление нового товара в базу данных
   const newItem = addToDatabase(
@@ -248,7 +249,7 @@ modalForm.addEventListener('submit', async (e) => {
     parseFloatFromString(formData.get('price')),
   );
 
-  // console.log('newItem: ', newItem);
+  console.log('newItem: ', newItem);
   // console.log('database: ', database);
 
   // Добавить новую строку в таблицу
