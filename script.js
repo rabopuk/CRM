@@ -77,7 +77,7 @@ const extractItemDataFromRow = (row) => {
   return { count, price };
 };
 
-const updateRowNumbers = (rows) => {
+const updateRowNumbers = async (rows) => {
   rows.forEach((row, index) => {
     row.querySelector('.table__cell:first-child').textContent = index + 1;
   });
@@ -94,7 +94,7 @@ const serializeForm = (form) => {
   return data;
 };
 
-const updateTotalPrice = () => {
+const updateTotalPrice = async () => {
   const rows = [...tableBody.querySelectorAll('.item')];
   const itemsData = rows.map(extractItemDataFromRow);
   const totalSum = getTotalSum(itemsData);
@@ -113,15 +113,20 @@ const updateModalTotalPrice = (count, price) => {
 
 const handleDeleteButtonClick = (item) => {
   const itemId = parseInt(item.querySelector('.table__cell:nth-child(1)').textContent);
-  const index = database.findIndex((item) => item.id === itemId);
 
-  if (index !== -1) {
-    database.splice(index, 1);
-  }
+  database = database.filter((dbItem) => dbItem.id !== itemId);
 
   item.remove();
+
   updateRowNumbers(tableBody.querySelectorAll('.item'));
-  updateTotalPrice();
+
+  updateTotalPrice()
+    .then(() => {
+      console.log('Element removed from database:', itemId);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
 };
 
 const renderGoods = (itemsArray) => {
