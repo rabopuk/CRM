@@ -268,10 +268,7 @@ modalForm.addEventListener('submit', async (e) => {
 countInput.addEventListener('input', () => updateModalTotalPrice(countInput, priceInput));
 priceInput.addEventListener('input', () => updateModalTotalPrice(countInput, priceInput));
 
-// Отобразить товары после их добавления в базу данных
-renderGoods(database);
-
-// Обновить итоговую стоимость после загрузки страницы
+// Зарендерить товары и отобразить итоговую стоимость после загрузки страницы
 window.addEventListener('load', async () => {
   database = await fetchData();
   renderGoods(database);
