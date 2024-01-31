@@ -68,7 +68,7 @@ const fetchData = async () => {
 };
 
 // Добавить новый товар в базу данных
-const addToDatabase = (id, title, category, units, count, price) => {
+const addToDatabase = (id, title, category, units, count, price, db) => {
   const newItem = {
     id,
     title,
@@ -78,7 +78,7 @@ const addToDatabase = (id, title, category, units, count, price) => {
     price,
   };
 
-  database.push(newItem);
+  db.push(newItem);
 
   return newItem;
 };
@@ -247,6 +247,7 @@ modalForm.addEventListener('submit', async (e) => {
     formData.get('units'),
     parseIntFromString(formData.get('count')),
     parseFloatFromString(formData.get('price')),
+    database,
   );
 
   console.log('newItem: ', newItem);
