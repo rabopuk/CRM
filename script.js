@@ -200,7 +200,7 @@ const recalculateModalPrice = () => {
 
   // Обновить текст итоговой стоимости в модальном окне
   const modalTotalPrice = document.querySelector('.modal__total-price');
-  modalTotalPrice.textContent = `${+total.toFixed(2)}`;
+  modalTotalPrice.textContent = `$ ${+total.toFixed(2)}`;
 };
 
 countInput.addEventListener('input', recalculateModalPrice);
@@ -238,6 +238,10 @@ modalForm.addEventListener('submit', async (e) => {
 
   // Сериализация формы
   const formData = serializeForm(e.target);
+
+  // Обнулить текст итоговой стоимости в модальном окне
+  const modalTotalPrice = document.querySelector('.modal__total-price');
+  modalTotalPrice.textContent = '$ 0.00';
 
   // Добавление нового товара в базу данных
   const newItem = addToDatabase(
