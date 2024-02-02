@@ -1,8 +1,18 @@
 /* eslint-disable object-curly-spacing */
-/* eslint-disable max-len */
 import { fetchData } from './modules/APIUtils.js';
-import { addRowToTable, getDOMElements, renderGoods, updateModalTotalPrice, updateRowNumbers, updateTotalPrice } from './modules/DOMUtils.js';
-import { addToDatabase, generateRandomId, serializeForm } from './modules/dataUtils.js';
+import {
+  addRowToTable,
+  getDOMElements,
+  renderGoods,
+  updateModalTotalPrice,
+  updateRowNumbers,
+  updateTotalPrice,
+} from './modules/DOMUtils.js';
+import {
+  addToDatabase,
+  generateRandomId,
+  serializeForm,
+} from './modules/dataUtils.js';
 import { handleDeleteButtonClick } from './modules/eventHandlers.js';
 
 const init = () => {
