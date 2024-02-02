@@ -6,9 +6,8 @@ import {
 } from './DOMUtils.js';
 import { removeFromDatabase } from './dataUtils.js';
 
-const { tableBody } = getDOMElements();
-
 export const handleDeleteButtonClick = (item, currentDatabase) => {
+  const { tableBody } = getDOMElements();
   const itemIdElement = item.querySelector('.table__cell-id');
   const itemId = parseInt(itemIdElement.textContent.replace('id: ', ''), 10);
 

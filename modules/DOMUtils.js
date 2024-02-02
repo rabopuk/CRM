@@ -25,8 +25,6 @@ export const getDOMElements = () => {
   };
 };
 
-const { tableBody } = getDOMElements();
-
 export const createRowElement = (item, index) => {
   const { id, title, category, units, count, price } = item;
   const newRow = document.createElement('tr');
@@ -54,6 +52,7 @@ export const createRowElement = (item, index) => {
 };
 
 export const addRowToTable = (item) => {
+  const { tableBody } = getDOMElements();
   const rows = tableBody.querySelectorAll('.item');
   const newRow = createRowElement(item, rows.length);
   tableBody.appendChild(newRow);
@@ -93,6 +92,8 @@ export const updateModalTotalPrice = (count, price) => {
 };
 
 export const renderGoods = (itemsArray) => {
+  const { tableBody } = getDOMElements();
+
   tableBody.innerHTML = '';
 
   itemsArray.forEach((item, index) => {
