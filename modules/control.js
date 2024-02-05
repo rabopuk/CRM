@@ -1,9 +1,7 @@
 /* eslint-disable indent */
 /* eslint-disable object-curly-spacing */
-import { fetchData } from './APIUtils.js';
 import {
   addRowToTable,
-  renderGoods,
   updateModalTotalPrice,
   updateRowNumbers,
   updateTotalPrice,
@@ -62,7 +60,16 @@ export const addEventListeners = (
     const count = parseInt(formData.get('count')) || 0;
     const price = parseFloat(formData.get('price')) || 0;
 
-    const { newItem, newDb } = addToDatabase(newId, formData.get('name'), formData.get('category'), formData.get('units'), count, price, database);
+    const { newItem, newDb } = addToDatabase(
+      newId,
+      formData.get('name'),
+      formData.get('category'),
+      formData.get('units'),
+      count,
+      price,
+      database,
+    );
+
     addRowToTable(newItem);
 
     modalForm.reset();
@@ -79,9 +86,4 @@ export const addEventListeners = (
 
   priceInput.addEventListener('input', () =>
     updateModalTotalPrice(countInput, priceInput));
-
-  document.addEventListener('DOMContentLoaded', async () => {
-    database = await fetchData();
-    renderGoods(database);
-  });
 };

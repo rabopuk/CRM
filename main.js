@@ -7,10 +7,8 @@ const init = async () => {
   const database = await fetchData();
   const domElements = getDOMElements();
 
-  domElements.overlay.classList.remove('active');
-
-  addEventListeners(database, ...Object.values(domElements));
   renderGoods(database);
+  addEventListeners(database, ...Object.values(domElements));
 };
 
 init();
