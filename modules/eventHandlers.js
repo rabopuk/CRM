@@ -16,8 +16,6 @@ export const handleDeleteButtonClick = (item, currentDatabase) => {
   if (removedItem) {
     item.remove();
 
-    console.log(newDb);
-
     const updatedRows = updateRowNumbers(tableBody.querySelectorAll('.item'));
 
     if (newDb.length === 0) {
