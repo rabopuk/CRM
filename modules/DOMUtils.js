@@ -11,6 +11,7 @@ export const getDOMElements = () => {
   const countInput = document.getElementById('count');
   const priceInput = document.getElementById('price');
   const vendorCodeIdSpan = document.querySelector('.vendor-code__id');
+  const picButton = document.querySelector('.table__btn_pic');
 
   return {
     overlay,
@@ -22,6 +23,7 @@ export const getDOMElements = () => {
     countInput,
     priceInput,
     vendorCodeIdSpan,
+    picButton,
   };
 };
 
@@ -42,7 +44,7 @@ export const createRowElement = (item, index) => {
     <td class="table__cell">$${+price.toFixed(2)}</td>
     <td class="table__cell">$${+(count * price).toFixed(2)}</td>
     <td class="table__cell table__cell_btn-wrapper">
-      <button class="table__btn table__btn_pic"></button>
+      <button class="table__btn table__btn_pic" data-pic="url"></button>
       <button class="table__btn table__btn_edit"></button>
       <button class="table__btn table__btn_del"></button>
     </td>

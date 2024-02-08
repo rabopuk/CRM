@@ -32,3 +32,19 @@ export const handleDeleteButtonClick = (item, currentDatabase) => {
 
   return currentDatabase;
 };
+
+export const handlePicButtonClick = url => {
+  const width = 800;
+  const height = 600;
+  const left = (screen.width - width) / 2;
+  const top = (screen.height - height) / 2;
+
+  window.open(
+    url,
+    '_blank',
+    `width=${width},
+    height=${height},
+    left=${left},
+    top=${top}`,
+  );
+};

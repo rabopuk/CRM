@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable indent */
 /* eslint-disable object-curly-spacing */
 import {
@@ -7,7 +8,7 @@ import {
   updateTotalPrice,
 } from './DOMUtils.js';
 import { addToDatabase, generateRandomId, serializeForm } from './dataUtils.js';
-import { handleDeleteButtonClick } from './eventHandlers.js';
+import { handleDeleteButtonClick, handlePicButtonClick } from './eventHandlers.js';
 
 export const addEventListeners = (
   database,
@@ -44,6 +45,12 @@ export const addEventListeners = (
       if (item) {
         database = handleDeleteButtonClick(item, database);
       }
+    }
+
+    if (target.classList.contains('table__btn_pic')) {
+      const picButtonUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Artist%27s_impression_of_supernova_1993J.jpg/800px-Artist%27s_impression_of_supernova_1993J.jpg';
+
+      handlePicButtonClick(picButtonUrl);
     }
   });
 
