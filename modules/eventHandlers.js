@@ -31,14 +31,20 @@ export const handleDeleteButtonClick = (item, currentDatabase) => {
   return currentDatabase;
 };
 
-export const handlePicButtonClick = url => {
+export const handlePicButtonClick = (target) => {
+  const picUrl = target.dataset.pic;
+
+  if (!picUrl) {
+    return;
+  }
+
   const width = 800;
   const height = 600;
   const left = (screen.width - width) / 2;
   const top = (screen.height - height) / 2;
 
   window.open(
-    url,
+    picUrl,
     '_blank',
     `width=${width},
     height=${height},

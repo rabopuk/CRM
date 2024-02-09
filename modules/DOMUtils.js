@@ -28,7 +28,7 @@ export const getDOMElements = () => {
 };
 
 export const createRowElement = (item, index) => {
-  const { id, title, category, units, count, price } = item;
+  const { id, title, category, units, count, price, picUrl } = item;
   const newRow = document.createElement('tr');
   newRow.classList.add('item');
 
@@ -44,11 +44,16 @@ export const createRowElement = (item, index) => {
     <td class="table__cell">$${+price.toFixed(2)}</td>
     <td class="table__cell">$${+(count * price).toFixed(2)}</td>
     <td class="table__cell table__cell_btn-wrapper">
-      <button class="table__btn table__btn_pic" data-pic="url"></button>
+      <button class="table__btn table__btn_pic"></button>
       <button class="table__btn table__btn_edit"></button>
       <button class="table__btn table__btn_del"></button>
     </td>
   `;
+
+  const picButton = newRow.querySelector('.table__btn_pic');
+  // picButton.dataset.pic = picUrl;
+  // ! для демонстрации заменяю на свою картинку
+  picButton.dataset.pic = 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Artist%27s_impression_of_supernova_1993J.jpg/800px-Artist%27s_impression_of_supernova_1993J.jpg';
 
   return newRow;
 };

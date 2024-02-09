@@ -48,9 +48,7 @@ export const addEventListeners = (
     }
 
     if (target.classList.contains('table__btn_pic')) {
-      const picButtonUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Artist%27s_impression_of_supernova_1993J.jpg/800px-Artist%27s_impression_of_supernova_1993J.jpg';
-
-      handlePicButtonClick(picButtonUrl);
+      handlePicButtonClick(target);
     }
   });
 
